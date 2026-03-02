@@ -3,6 +3,10 @@
 import { serverFetch } from "@/lib/fetcher";
 
 export interface DashboardStats {
+  mess: {
+    name: string;
+    inviteCode: string;
+  };
   activeMembers: number;
   messBalance: number;
   totalExpenses: number;
@@ -14,7 +18,9 @@ export interface DashboardStats {
 
 export const getDashboardStats = async (): Promise<DashboardStats | null> => {
   try {
-    const response = await serverFetch("/reports/dashboard");
+    const response = await serverFetch("/reports/dashboard", {
+      tags: ["dashboard-stats"],
+    });
     if (response?.success) {
       return response.data;
     }
@@ -28,7 +34,12 @@ export const getDashboardStats = async (): Promise<DashboardStats | null> => {
 };
 
 export interface MemberDashboardStats {
-  memberInfo: any;
+  messName: string;
+  memberInfo: {
+    fullName: string;
+    profilePicture: string;
+    role: string;
+  };
   mealStats: {
     totalMeals: number;
     mealRate: number;

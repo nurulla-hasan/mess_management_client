@@ -6,7 +6,7 @@ import { Wallet } from "lucide-react";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { addDepositAction } from "@/actions/deposit";
+import { addDeposit } from "@/services/deposit";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { ErrorToast, SuccessToast } from "@/lib/utils";
@@ -38,7 +38,7 @@ export function MakeDepositModal() {
         // memberId is not included, backend will use logged-in user's memberId
       };
 
-      const result = await addDepositAction(payload);
+      const result = await addDeposit(payload);
       if (result?.success) {
         SuccessToast("Deposit request submitted successfully");
         setOpen(false);

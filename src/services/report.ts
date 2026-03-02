@@ -54,7 +54,9 @@ export const getMealRateTrend = async (months: number = 6, month?: number, year?
     if (month) queryParams.append("month", month.toString());
     if (year) queryParams.append("year", year.toString());
 
-    const response = await serverFetch(`/reports/meal-rate-trend?${queryParams}`);
+    const response = await serverFetch(`/reports/meal-rate-trend?${queryParams}`, {
+      tags: ["meal-rate-trend"],
+    });
     return response?.success ? response.data : null;
   } catch (error) {
     if ((error as Error).message !== "Not authorized, no token provided") {
@@ -70,7 +72,9 @@ export const getExpenseDistribution = async (month?: number, year?: number): Pro
     if (month) queryParams.append("month", month.toString());
     if (year) queryParams.append("year", year.toString());
 
-    const response = await serverFetch(`/reports/expense-distribution?${queryParams}`);
+    const response = await serverFetch(`/reports/expense-distribution?${queryParams}`, {
+      tags: ["expense-distribution"],
+    });
     return response?.success ? response.data : null;
   } catch (error) {
     if ((error as Error).message !== "Not authorized, no token provided") {
@@ -86,7 +90,9 @@ export const getSettlement = async (month?: number, year?: number): Promise<Sett
     if (month) queryParams.append("month", month.toString());
     if (year) queryParams.append("year", year.toString());
 
-    const response = await serverFetch(`/reports/settlement?${queryParams}`);
+    const response = await serverFetch(`/reports/settlement?${queryParams}`, {
+      tags: ["settlement"],
+    });
     return response?.success ? response.data : null;
   } catch (error) {
     if ((error as Error).message !== "Not authorized, no token provided") {

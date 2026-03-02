@@ -14,8 +14,25 @@ import { Button } from "@/components/ui/button";
 import { getDashboardStats } from "@/services/dashboard";
 import { format } from "date-fns";
 import { formatCurrency } from "@/lib/utils";
+import { getCurrentUser } from "@/services/auth";
+import SetupMess from "@/components/dashboard/SetupMess";
+import { redirect } from "next/navigation";
 
 export default async function AdminDashboard() {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    redirect("/auth/login");
+  }
+
+  if (!user.messId) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] p-4">
+        <SetupMess user={user} />
+      </div>
+    );
+  }
+
   const stats = await getDashboardStats();
 
  
@@ -77,6 +94,37 @@ export default async function AdminDashboard() {
 
   return (
     <div className="flex flex-col gap-6">
+      {/* Mess Info Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-6 bg-card border rounded-xl shadow-sm">
+        <div className="space-y-1">
+          <h1 className="text-2xl font-bold tracking-tight text-primary">
+            {stats?.mess?.name || "Mess Dashboard"}
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Welcome back! Here&apos;s what&apos;s happening with your mess today.
+          </p>
+        </div>
+        <div className="flex items-center gap-3 bg-muted/50 p-3 rounded-lg border border-dashed border-primary/20">
+          <div className="space-y-0.5">
+            <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">
+              Invite Code
+            </p>
+            <p className="text-lg font-mono font-bold text-primary tracking-widest">
+              {stats?.mess?.inviteCode}
+            </p>
+          </div>
+          <div className="h-8 w-px bg-border mx-1" />
+          <Button variant="ghost" size="sm" className="h-9 w-9 p-0" asChild>
+            <a href="#" onClick={(e) => {
+              e.preventDefault();
+              navigator.clipboard.writeText(stats?.mess?.inviteCode || "");
+            }}>
+              <Users className="h-4 w-4 text-primary" />
+            </a>
+          </Button>
+        </div>
+      </div>
+
       {/* Stats Row */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         <StatCard
@@ -124,7 +172,7 @@ export default async function AdminDashboard() {
       </div>
 
       {/* Quick Actions */}
-      <QuickActions />
+      <QuickActions inviteCode={stats?.mess?.inviteCode} />
 
       {/* Main Content Grid */}
       <div className="grid gap-6 lg:grid-cols-3">

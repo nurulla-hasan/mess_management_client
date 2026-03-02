@@ -7,8 +7,8 @@ import { Minus } from "lucide-react";
 import { useState, useCallback } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { addExpenseAction } from "@/actions/expense";
-import { getAllMembersAction } from "@/actions/member";
+import { addExpense } from "@/services/expense";
+import { getAllMembers } from "@/services/member";
 import { SearchableSelect, SearchableOption } from "@/components/ui/custom/searchable-select";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ErrorToast, SuccessToast } from "@/lib/utils";
@@ -26,7 +26,7 @@ export function AddExpenseModal() {
   });
 
   const fetchMemberOptions = useCallback(async (search: string) => {
-    const members = await getAllMembersAction();
+    const members = await getAllMembers();
     return members
       .filter((m: any) => m.userId?.fullName.toLowerCase().includes(search.toLowerCase()))
       .map((m: any) => ({
@@ -54,7 +54,7 @@ export function AddExpenseModal() {
         paymentSource: formData.paymentSource,
       };
 
-      const result = await addExpenseAction(payload);
+      const result = await addExpense(payload);
       if (result?.success) {
         SuccessToast("Expense added successfully");
         setOpen(false);

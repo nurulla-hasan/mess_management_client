@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DataTable } from "@/components/ui/custom/data-table";
-import { Expense } from "@/services/expense";
+import { updateExpenseStatus, Expense } from "@/services/expense";
 import { formatCurrency, SuccessToast, ErrorToast } from "@/lib/utils";
 import { format } from "date-fns";
 import { PaginationMeta } from "@/types/global.types";
@@ -18,7 +18,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal, CheckCircle, XCircle } from "lucide-react";
-import { updateExpenseStatusAction } from "@/actions/expense";
 
 const categoryStyles: Record<string, string> = {
   "meat_fish": "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300 border-orange-200 dark:border-orange-800",
@@ -42,7 +41,7 @@ export function ExpenseTable({ expenses, pagination }: ExpenseTableProps) {
   }, [expenses]);
 
   const handleStatusUpdate = async (id: string, newStatus: "approved" | "rejected") => {
-    const result = await updateExpenseStatusAction(id, newStatus);
+    const result = await updateExpenseStatus(id, newStatus);
     if (result?.success) {
       SuccessToast(`Expense ${newStatus} successfully`);
       // Optimistic update

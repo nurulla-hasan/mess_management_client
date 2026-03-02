@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 import { serverFetch } from "@/lib/fetcher";
+import { updateTag } from "next/cache";
 
 export interface Meal {
   _id: string;
@@ -38,7 +40,9 @@ export const getMeals = async (
     if (month) queryParams.append("month", month.toString());
     if (year) queryParams.append("year", year.toString());
 
-    const response = await serverFetch(`/meals?${queryParams}`);
+    const response = await serverFetch(`/meals?${queryParams}`, {
+      tags: ["meals"],
+    });
     if (response?.success) {
       return response.data;
     }
@@ -60,7 +64,9 @@ export const getMealSummary = async (
     if (month) queryParams.append("month", month.toString());
     if (year) queryParams.append("year", year.toString());
 
-    const response = await serverFetch(`/meals/summary?${queryParams}`);
+    const response = await serverFetch(`/meals/summary?${queryParams}`, {
+      tags: ["meal-summary"],
+    });
     if (response?.success) {
       return response.data;
     }
@@ -72,3 +78,34 @@ export const getMealSummary = async (
     return null;
   }
 };
+
+export async function addMeal(data: any) {
+  try {
+    const response = await serverFetch("/meals", {
+      method: "POST",
+      body: data,
+    });
+    if (response?.success) {
+      updateTag("meals");
+      updateTag("meal-summary");
+      updateTag("dashboard-stats");
+    }
+    return response;
+  } catch (error) {
+    return { success: false, message: (error as Error).message };
+  }
+}
+
+export async function getMealByDate(date: string) {
+  try {
+    const response = await serverFetch(`/meals/${date}`, {
+      tags: [`meal-${date}`],
+    });
+    if (response?.success) {
+      return response.data;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}

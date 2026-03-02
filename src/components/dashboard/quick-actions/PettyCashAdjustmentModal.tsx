@@ -7,9 +7,9 @@ import { RotateCw } from "lucide-react";
 import { useState, useCallback } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { addExpenseAction } from "@/actions/expense";
-import { addDepositAction } from "@/actions/deposit";
-import { getAllMembersAction } from "@/actions/member";
+import { addExpense } from "@/services/expense";
+import { addDeposit } from "@/services/deposit";
+import { getAllMembers } from "@/services/member";
 import { SearchableSelect, SearchableOption } from "@/components/ui/custom/searchable-select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
@@ -27,7 +27,7 @@ export function PettyCashAdjustmentModal() {
   });
 
   const fetchMemberOptions = useCallback(async (search: string) => {
-    const members = await getAllMembersAction();
+    const members = await getAllMembers();
     return members
       .filter((m: any) => m.userId?.fullName.toLowerCase().includes(search.toLowerCase()))
       .map((m: any) => ({
@@ -57,7 +57,7 @@ export function PettyCashAdjustmentModal() {
           buyerId: formData.member.value,
           paymentSource: "mess_fund",
         };
-        result = await addExpenseAction(payload);
+        result = await addExpense(payload);
       } else {
         // Deposit
         const payload = {
@@ -67,7 +67,7 @@ export function PettyCashAdjustmentModal() {
           note: `Adjustment: ${formData.reason}`,
           memberId: formData.member.value,
         };
-        result = await addDepositAction(payload);
+        result = await addDeposit(payload);
       }
 
       if (result?.success) {

@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+"use server";
 import { serverFetch } from "@/lib/fetcher";
+import { updateTag } from "next/cache";
 
 export interface Deposit {
   _id: string;
@@ -41,7 +43,9 @@ export const getAllDeposits = async (
     queryParams.append("limit", limit.toString());
     if (status) queryParams.append("status", status);
 
-    const response = await serverFetch(`/deposits?${queryParams}`);
+    const response = await serverFetch(`/deposits?${queryParams}`, {
+      tags: ["deposits"],
+    });
     if (response?.success) {
       return response.data;
     }
@@ -64,7 +68,9 @@ export const getDepositSummary = async (
     if (month) queryParams.append("month", month.toString());
     if (year) queryParams.append("year", year.toString());
 
-    const response = await serverFetch(`/deposits/summary?${queryParams}`);
+    const response = await serverFetch(`/deposits/summary?${queryParams}`, {
+      tags: ["deposit-summary"],
+    });
     if (response?.success) {
       return response.data;
     }
@@ -76,3 +82,39 @@ export const getDepositSummary = async (
     return null;
   }
 };
+
+export async function addDeposit(data: any) {
+  try {
+    const response = await serverFetch("/deposits", {
+      method: "POST",
+      body: data,
+    });
+    if (response?.success) {
+      updateTag("deposits");
+      updateTag("deposit-summary");
+      updateTag("dashboard-stats");
+      updateTag("members");
+    }
+    return response;
+  } catch (error) {
+    return { success: false, message: (error as Error).message };
+  }
+}
+
+export async function updateDepositStatus(id: string, status: string) {
+  try {
+    const response = await serverFetch(`/deposits/${id}/status`, {
+      method: "PUT",
+      body: { status },
+    });
+    if (response?.success) {
+      updateTag("deposits");
+      updateTag("deposit-summary");
+      updateTag("dashboard-stats");
+      updateTag("members");
+    }
+    return response;
+  } catch (error) {
+    return { success: false, message: (error as Error).message };
+  }
+}

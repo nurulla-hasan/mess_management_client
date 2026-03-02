@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 import { serverFetch } from "@/lib/fetcher";
+import { updateTag } from "next/cache";
 
 export interface Expense {
   _id: string;
@@ -62,7 +64,9 @@ export const getExpenses = async (
     if (search) queryParams.append("search", search);
     if (buyerId) queryParams.append("buyerId", buyerId);
 
-    const response = await serverFetch(`/expenses?${queryParams}`);
+    const response = await serverFetch(`/expenses?${queryParams}`, {
+      tags: ["expenses"],
+    });
     if (response?.success) {
       return {
         expenses: response.data,
@@ -85,7 +89,9 @@ export const getExpenseStats = async (
     if (month) queryParams.append("month", month.toString());
     if (year) queryParams.append("year", year.toString());
 
-    const response = await serverFetch(`/expenses/stats?${queryParams}`);
+    const response = await serverFetch(`/expenses/stats?${queryParams}`, {
+      tags: ["expense-stats"],
+    });
     if (response?.success) {
       return response.data;
     }
@@ -95,3 +101,39 @@ export const getExpenseStats = async (
     return null;
   }
 };
+
+export async function addExpense(data: any) {
+  try {
+    const response = await serverFetch("/expenses", {
+      method: "POST",
+      body: data,
+    });
+    if (response?.success) {
+      updateTag("expenses");
+      updateTag("expense-stats");
+      updateTag("dashboard-stats");
+      updateTag("meal-summary");
+    }
+    return response;
+  } catch (error) {
+    return { success: false, message: (error as Error).message };
+  }
+}
+
+export async function updateExpenseStatus(id: string, status: "approved" | "rejected") {
+  try {
+    const response = await serverFetch(`/expenses/${id}/status`, {
+      method: "PUT",
+      body: { status },
+    });
+    if (response?.success) {
+      updateTag("expenses");
+      updateTag("expense-stats");
+      updateTag("dashboard-stats");
+      updateTag("meal-summary");
+    }
+    return response;
+  } catch (error) {
+    return { success: false, message: (error as Error).message };
+  }
+}

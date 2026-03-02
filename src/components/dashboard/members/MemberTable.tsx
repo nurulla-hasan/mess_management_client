@@ -7,11 +7,9 @@ import { DataTable } from "@/components/ui/custom/data-table";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Member } from "@/services/member";
+import { updateMemberStatus, Member } from "@/services/member";
 import { PaginationMeta } from "@/types/global.types";
 import { format } from "date-fns";
-
-import { updateMemberStatusAction } from "@/actions/member";
 import { ErrorToast, SuccessToast } from "@/lib/utils";
 import { EditMemberModal } from "./EditMemberModal";
 
@@ -28,7 +26,7 @@ const StatusCell = ({ initialStatus, memberId }: { initialStatus: string, member
     setIsActive(!isActive);
 
     try {
-        const result = await updateMemberStatusAction(memberId, newStatus);
+        const result = await updateMemberStatus(memberId, newStatus);
         if (!result?.success) {
             // Revert
             setIsActive(isActive);

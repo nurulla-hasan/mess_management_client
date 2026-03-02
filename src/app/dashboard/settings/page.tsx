@@ -1,30 +1,117 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
+import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
 import PageHeader from "@/components/ui/custom/page-header";
-import { Shield, Sliders, User } from "lucide-react";
+import { Shield, User, Loader2 } from "lucide-react";
+import { getMyProfile, updateProfile, changePassword } from "@/services/user";
+import { toast } from "sonner";
 
 export default function SettingsPage() {
+  const [profile, setProfile] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  
+  // Profile Form State
+  const [profileData, setProfileData] = useState({
+    fullName: "",
+    email: "",
+    phone: ""
+  });
+
+  // Password Form State
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: ""
+  });
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      const res = await getMyProfile();
+      if (res?.success) {
+        setProfile(res.data);
+        setProfileData({
+          fullName: res.data.fullName || "",
+          email: res.data.email || "",
+          phone: res.data.phone || ""
+        });
+      }
+      setLoading(false);
+    };
+    fetchProfile();
+  }, []);
+
+  const handleProfileUpdate = async () => {
+    setSubmitting(true);
+    try {
+      const res = await updateProfile({
+        fullName: profileData.fullName,
+        phone: profileData.phone
+      });
+      if (res?.success) {
+        toast.success("Profile updated successfully");
+      } else {
+        toast.error(res?.message || "Failed to update profile");
+      }
+    } catch (error: any) {
+      toast.error(error.message);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handlePasswordChange = async () => {
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+    
+    setSubmitting(true);
+    try {
+      const res = await changePassword({
+        currentPassword: passwordData.currentPassword,
+        newPassword: passwordData.newPassword
+      });
+      if (res?.success) {
+        toast.success("Password changed successfully");
+        setPasswordData({
+          currentPassword: "",
+          newPassword: "",
+          confirmPassword: ""
+        });
+      } else {
+        toast.error(res?.message || "Failed to change password");
+      }
+    } catch (error: any) {
+      toast.error(error.message);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-[60vh]">
+        <Loader2 className="h-8 w-8 animate-spin text-green-500" />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <PageHeader
         title="System Settings"
-        description="Manage your profile, mess preferences and security."
+        description="Manage your profile and security."
       >
-        <Button>
-          Save Changes
+        <Button onClick={handleProfileUpdate} disabled={submitting}>
+          {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          Save Profile Changes
         </Button>
       </PageHeader>
 
@@ -44,7 +131,8 @@ export default function SettingsPage() {
                 <Input
                   id="fullName"
                   placeholder="Enter your full name"
-                  defaultValue="Admin User"
+                  value={profileData.fullName}
+                  onChange={(e) => setProfileData({ ...profileData, fullName: e.target.value })}
                 />
               </div>
               <div className="space-y-2">
@@ -52,8 +140,17 @@ export default function SettingsPage() {
                 <Input
                   id="email"
                   type="email"
-                  placeholder="Enter your email"
-                  defaultValue="admin@messmanager.com"
+                  disabled
+                  value={profileData.email}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone">Phone Number</Label>
+                <Input
+                  id="phone"
+                  placeholder="Enter your phone number"
+                  value={profileData.phone}
+                  onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
                 />
               </div>
             </div>
@@ -62,7 +159,7 @@ export default function SettingsPage() {
               <Label>Profile Picture</Label>
               <div className="flex items-center gap-4">
                 <Avatar className="h-16 w-16 bg-orange-200">
-                  <AvatarImage src="/avatars/01.png" alt="Avatar" />
+                  <AvatarImage src={profile?.profilePicture} alt="Avatar" />
                   <AvatarFallback className="bg-orange-200 text-orange-700 text-xl">
                     <User className="h-8 w-8" />
                   </AvatarFallback>
@@ -71,72 +168,8 @@ export default function SettingsPage() {
                   <Button variant="outline" size="sm" className="h-9">
                     Change Photo
                   </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-9 text-red-500 hover:text-red-600 hover:bg-red-50"
-                  >
-                    Remove
-                  </Button>
                 </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Mess Preferences */}
-        <Card>
-          <CardHeader className="flex flex-row items-center gap-2 space-y-0 pb-6">
-            <Sliders className="h-5 w-5 text-green-500" />
-            <CardTitle className="text-lg font-semibold">
-              Mess Preferences
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="grid gap-6 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="calculationBase">
-                  Meal Rate Calculation Base
-                </Label>
-                <Select defaultValue="variable">
-                  <SelectTrigger id="calculationBase">
-                    <SelectValue placeholder="Select calculation base" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="variable">
-                      Variable (Total Expense / Total Meals)
-                    </SelectItem>
-                    <SelectItem value="fixed">Fixed Rate</SelectItem>
-                  </SelectContent>
-                </Select>
-                <p className="text-xs text-muted-foreground">
-                  Automatically recalculates rates based on daily market costs.
-                </p>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="currency">Default Currency</Label>
-                <Select defaultValue="bdt">
-                  <SelectTrigger id="currency">
-                    <SelectValue placeholder="Select currency" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="bdt">
-                      BDT (৳) - Bangladeshi Taka
-                    </SelectItem>
-                    <SelectItem value="usd">USD ($) - US Dollar</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between rounded-lg border p-4 shadow-sm">
-              <div className="space-y-0.5">
-                <Label className="text-base">Notification Reminders</Label>
-                <p className="text-sm text-muted-foreground">
-                  Receive daily reminders to input meal counts and expenses.
-                </p>
-              </div>
-              <Switch defaultChecked className="data-[state=checked]:bg-green-500" />
             </div>
           </CardContent>
         </Card>
@@ -154,7 +187,8 @@ export default function SettingsPage() {
                 id="currentPassword"
                 type="password"
                 placeholder="Enter current password"
-                defaultValue="password123"
+                value={passwordData.currentPassword}
+                onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
               />
             </div>
             <div className="grid gap-4 md:grid-cols-2">
@@ -164,6 +198,8 @@ export default function SettingsPage() {
                   id="newPassword"
                   type="password"
                   placeholder="Enter new password"
+                  value={passwordData.newPassword}
+                  onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
                 />
               </div>
               <div className="space-y-2">
@@ -172,9 +208,15 @@ export default function SettingsPage() {
                   id="confirmPassword"
                   type="password"
                   placeholder="Confirm new password"
+                  value={passwordData.confirmPassword}
+                  onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
                 />
               </div>
             </div>
+            <Button className="w-full mt-4" variant="outline" onClick={handlePasswordChange} disabled={submitting}>
+              {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Update Password
+            </Button>
           </CardContent>
         </Card>
       </div>

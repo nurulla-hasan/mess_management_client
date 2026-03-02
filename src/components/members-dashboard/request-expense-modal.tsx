@@ -6,7 +6,7 @@ import { PlusCircle } from "lucide-react";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { addExpenseAction } from "@/actions/expense";
+import { addExpense } from "@/services/expense";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ErrorToast, SuccessToast } from "@/lib/utils";
 
@@ -39,7 +39,7 @@ export function RequestExpenseModal() {
         // buyerId is handled by backend for members
       };
 
-      const result = await addExpenseAction(payload);
+      const result = await addExpense(payload);
       if (result?.success) {
         SuccessToast("Expense request submitted successfully");
         setOpen(false);

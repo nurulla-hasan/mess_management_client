@@ -14,7 +14,7 @@ import {
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal, CheckCircle, XCircle } from "lucide-react";
-import { updateDepositStatusAction } from "@/actions/deposit";
+import { updateDepositStatus } from "@/services/deposit";
 import { SuccessToast, ErrorToast } from "@/lib/utils";
 import { format } from "date-fns";
 import { formatCurrency } from "@/lib/utils";
@@ -47,7 +47,7 @@ export function DepositList({ initialData, pagination }: DepositListProps) {
   const [data, setData] = useState(initialData);
 
   const handleStatusUpdate = async (id: string, newStatus: string) => {
-    const result = await updateDepositStatusAction(id, newStatus);
+    const result = await updateDepositStatus(id, newStatus);
     if (result?.success) {
       SuccessToast(`Deposit ${newStatus} successfully`);
       // Optimistic update

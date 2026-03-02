@@ -7,8 +7,8 @@ import { CreditCard } from "lucide-react";
 import { useState, useCallback } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { addDepositAction } from "@/actions/deposit";
-import { getAllMembersAction } from "@/actions/member";
+import { addDeposit } from "@/services/deposit";
+import { getAllMembers } from "@/services/member";
 import { SearchableSelect, SearchableOption } from "@/components/ui/custom/searchable-select";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
@@ -27,7 +27,7 @@ export function RecordPaymentModal() {
 
   const fetchMemberOptions = useCallback(async (search: string) => {
     try {
-      const members = await getAllMembersAction();
+      const members = await getAllMembers();
       if (!Array.isArray(members)) return [];
       
       return members
@@ -63,7 +63,7 @@ export function RecordPaymentModal() {
         memberId: formData.member.value,
       };
 
-      const result = await addDepositAction(payload);
+      const result = await addDeposit(payload);
       if (result?.success) {
         SuccessToast("Payment recorded successfully");
         setOpen(false);

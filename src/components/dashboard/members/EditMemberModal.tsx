@@ -7,10 +7,9 @@ import { Pencil } from "lucide-react";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { updateMemberAction } from "@/actions/member";
+import { updateMember, Member } from "@/services/member";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ErrorToast, SuccessToast } from "@/lib/utils";
-import { Member } from "@/services/member";
 
 interface EditMemberModalProps {
   member: Member;
@@ -36,7 +35,7 @@ export function EditMemberModal({ member }: EditMemberModalProps) {
 
     setSubmitting(true);
     try {
-      const result = await updateMemberAction(member._id, formData);
+      const result = await updateMember(member._id, formData);
       if (result?.success) {
         SuccessToast("Member updated successfully");
         setOpen(false);

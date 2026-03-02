@@ -8,12 +8,13 @@ import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { addMealAction, getMealByDateAction } from "@/actions/meal";
+import { addMeal, getMealByDate } from "@/services/meal";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ErrorToast, SuccessToast } from "@/lib/utils";
 
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
+import { Spinner } from "@/components/ui/spinner";
 
 export function AddMealModal() {
   const [open, setOpen] = useState(false);
@@ -42,7 +43,7 @@ export function AddMealModal() {
     setLoading(true);
     setEntries([]);
     try {
-      const data = await getMealByDateAction(targetDate);
+      const data = await getMealByDate(targetDate);
       if (data) {
         // If entries exist (data.entries is array of populated objects)
         // Or if it's new (data.entries is array of template objects from backend)
@@ -112,7 +113,7 @@ export function AddMealModal() {
         })),
       };
 
-      const result = await addMealAction(payload);
+      const result = await addMeal(payload);
       if (result?.success) {
         SuccessToast("Meal entries updated successfully")
         setOpen(false);
@@ -259,7 +260,7 @@ export function AddMealModal() {
 
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {loading ? (
-            <div className="text-center py-8 text-muted-foreground">Loading members...</div>
+            <div className="flex items-center justify-center py-8"><Spinner /></div>
           ) : (
             entries.map((entry, index) => (
               <div key={entry.memberId} className="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-muted/50 transition-colors">

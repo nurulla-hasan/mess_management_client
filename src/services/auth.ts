@@ -5,6 +5,7 @@ import { cookies } from 'next/headers';
 import { jwtDecode } from 'jwt-decode';
 import { FieldValues } from 'react-hook-form';
 import { serverFetch } from '@/lib/fetcher';
+import { updateTag } from 'next/cache';
 
 
 // SIGN IN (With Role Check)
@@ -17,6 +18,20 @@ export const signInUser = async (userData: FieldValues): Promise<any> => {
     });
 
     if (result?.success) {
+      updateTag('profile');
+      updateTag('dashboard-stats');
+      updateTag('meals');
+      updateTag('expenses');
+      updateTag('deposits');
+      updateTag('members');
+      updateTag('meal-summary');
+      updateTag('deposit-summary');
+      updateTag('expense-stats');
+      updateTag('member-stats');
+      updateTag('meal-rate-trend');
+      updateTag('expense-distribution');
+      updateTag('settlement');
+      
       const accessToken = result?.data?.accessToken;
       const decodedData: any = jwtDecode(accessToken);
 
@@ -194,8 +209,9 @@ export const updateUserData = async (userData: FieldValues): Promise<any> => {
     });
 
     if (result?.success) {
-      // Optionally update token if user data in token changes, but usually profile update doesn't change token unless role/email changes
-      // (await cookies()).set('accessToken', result?.data?.accessToken);
+      updateTag('profile');
+      updateTag('members');
+      updateTag('dashboard-stats');
     }
 
     return result;
@@ -232,7 +248,42 @@ export const updateProfile = async (formData: FormData): Promise<any> => {
       method: 'PUT',
       body: formData,
     });
+    if (response?.success) {
+      updateTag('profile');
+      updateTag('members');
+      updateTag('dashboard-stats');
+    }
     return response;
+  } catch (error: any) {
+    return { success: false, message: error.message };
+  }
+};
+
+export const createMess = async (data: any): Promise<any> => {
+  try {
+    const result = await serverFetch('/messes', {
+      method: 'POST',
+      body: data,
+    });
+    if (result?.success) {
+      updateTag('profile');
+    }
+    return result;
+  } catch (error: any) {
+    return { success: false, message: error.message };
+  }
+};
+
+export const joinMess = async (inviteCode: string): Promise<any> => {
+  try {
+    const result = await serverFetch('/messes/join', {
+      method: 'POST',
+      body: { inviteCode },
+    });
+    if (result?.success) {
+      updateTag('profile');
+    }
+    return result;
   } catch (error: any) {
     return { success: false, message: error.message };
   }
