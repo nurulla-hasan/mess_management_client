@@ -1,16 +1,15 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { ShoppingBasket, Wallet, TrendingUp } from "lucide-react";
+import { ShoppingBasket, Wallet } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 
 interface ExpenseStatsProps {
   totalExpense: number;
   totalCollected: number;
-  remainingBudget: number; // This comes from API (Monthly Budget - Total Expense)
 }
 
-export function ExpenseStats({ totalExpense, totalCollected, remainingBudget }: ExpenseStatsProps) {
+export function ExpenseStats({ totalExpense, totalCollected }: ExpenseStatsProps) {
   // Calculate percentage of collection used
   const percentageUsed = totalCollected > 0 ? (totalExpense / totalCollected) * 100 : 0;
   

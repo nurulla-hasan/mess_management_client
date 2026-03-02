@@ -31,7 +31,7 @@ export function AddMemberModal() {
 
     setSubmitting(true);
     try {
-      const result = await createMemberAction(formData);
+      const result = await createMember(formData);
       if (result?.success) {
         SuccessToast("Member created successfully");
         setOpen(false);

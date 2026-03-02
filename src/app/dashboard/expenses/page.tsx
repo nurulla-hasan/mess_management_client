@@ -46,7 +46,6 @@ export default async function ExpensesPage({ searchParams }: ExpensesPageProps) 
       <ExpenseStats 
         totalExpense={stats?.totalExpense || 0}
         totalCollected={depositSummary?.totalCollected || 0}
-        remainingBudget={stats?.remainingBudget || 0}
       />
       
       <ExpenseTable 

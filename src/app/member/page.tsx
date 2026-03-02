@@ -58,7 +58,7 @@ export default async function MemberPage() {
           <DepositHistory recentDeposits={data.recentDeposits} />
         </div>
         <div className="space-y-6">
-          <MessManagement user={data.memberInfo} />
+          <MessManagement />
           <MealOffDeadline />
         </div>
       </div>

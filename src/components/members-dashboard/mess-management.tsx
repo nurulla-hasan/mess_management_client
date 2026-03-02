@@ -1,19 +1,10 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { PlusCircle } from "lucide-react";
-import Link from "next/link";
 import { MakeDepositModal } from "./make-deposit-modal";
 import { RequestExpenseModal } from "./request-expense-modal";
 
-interface MessManagementProps {
-  user?: {
-    role?: string;
-  };
-}
-
-export function MessManagement({ user }: MessManagementProps) {
+export function MessManagement() {
   return (
     <Card className="border shadow-sm">
       <CardHeader>
