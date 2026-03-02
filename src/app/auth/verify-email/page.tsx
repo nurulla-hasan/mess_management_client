@@ -3,7 +3,7 @@
 import { useState, Suspense } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
+import { z } from "zod"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import {
@@ -75,7 +75,7 @@ function VerifyEmailContent() {
       } else {
         ErrorToast(result?.message || "Failed to resend code.")
       }
-    } catch (error) {
+    } catch {
       ErrorToast("An error occurred.")
     } finally {
       setIsLoading(false)
@@ -123,7 +123,7 @@ function VerifyEmailContent() {
               Verify Email
             </Button>
             <div className="text-center text-sm">
-              Didn't receive code?{" "}
+              Didn&apos;t receive code?{" "}
               <button type="button" onClick={handleResend} className="underline underline-offset-4 hover:text-primary" disabled={isLoading}>
                 Resend
               </button>
