@@ -95,11 +95,11 @@ export function ExportReportButton({
         tableRows.push([
           "TOTAL",
           settlementData.totals.totalMeals,
-          (settlementData.totals.totalMealCost ?? 0).toFixed(2),
-          (settlementData.totals.totalFixedShare ?? 0).toFixed(2),
-          ((settlementData.totals.totalMealCost ?? 0) + (settlementData.totals.totalFixedShare ?? 0)).toFixed(2),
-          (settlementData.totals.totalDeposited ?? 0).toFixed(2),
-          (settlementData.totals.totalBalance ?? 0).toFixed(2), 
+          settlementData.totals.totalMealCost.toFixed(2),
+          settlementData.totals.totalFixedShare.toFixed(2),
+          (settlementData.totals.totalMealCost + settlementData.totals.totalFixedShare).toFixed(2),
+          settlementData.totals.totalDeposited.toFixed(2),
+          settlementData.totals.totalBalance.toFixed(2),
         ]);
       }
 

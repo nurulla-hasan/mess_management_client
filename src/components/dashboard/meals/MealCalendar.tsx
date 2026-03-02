@@ -201,7 +201,6 @@ export function MealCalendar({ meals, currentDate }: MealCalendarProps) {
                   ) : (
                     // Placeholder for hover effect or empty state
                     <div className="h-12 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                       <span className="text-xs text-muted-foreground border border-dashed rounded px-2 py-1">Add entry</span>
                     </div>
                   )}
                 </div>

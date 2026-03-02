@@ -2,8 +2,7 @@
 import { ExpenseStats } from "@/components/dashboard/expenses/ExpenseStats";
 import { ExpenseTable } from "@/components/dashboard/expenses/ExpenseTable";
 import PageHeader from "@/components/ui/custom/page-header";
-import { Button } from "@/components/ui/button";
-import { ShoppingCart } from "lucide-react";
+import { AddExpenseModal } from "@/components/dashboard/quick-actions/AddExpenseModal";
 import { getExpenses, getExpenseStats } from "@/services/expense";
 import { getDepositSummary } from "@/services/deposit";
 
@@ -41,10 +40,7 @@ export default async function ExpensesPage({ searchParams }: ExpensesPageProps) 
         title="Market Expenses" 
         description="Track and manage bazar/market tracking for current cycle."
       >
-        <Button>
-            <ShoppingCart />
-            Add Expense
-        </Button>
+        <AddExpenseModal />
       </PageHeader>
       
       <ExpenseStats 

@@ -2,12 +2,10 @@
 import { MealCalendar } from "@/components/dashboard/meals/MealCalendar";
 import { MonthlySummary } from "@/components/dashboard/meals/MonthlySummary";
 import { MessFundStatus } from "@/components/dashboard/meals/MessFundStatus";
-import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
-import { PlusCircle } from "lucide-react";
 import { getMeals, getMealSummary } from "@/services/meal";
 import { getDepositSummary } from "@/services/deposit";
 import PageHeader from "@/components/ui/custom/page-header";
+import { AddMealModal } from "@/components/dashboard/quick-actions/AddMealModal";
 
 interface MealsPageProps {
   searchParams: Promise<{ month?: string; year?: string }>;
@@ -35,10 +33,7 @@ export default async function MealsPage({ searchParams }: MealsPageProps) {
         title="Meal Management" 
         description="Review and record daily meal consumption for members."
       >
-        <Button className="h-10">
-            <PlusCircle className="mr-2 h-4 w-4" />
-            Daily Meal Entry
-        </Button>
+        <AddMealModal />
       </PageHeader>
       
       <div className="flex-1 min-h-125">

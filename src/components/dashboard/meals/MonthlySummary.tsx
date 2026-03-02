@@ -1,8 +1,13 @@
-import { Button } from "@/components/ui/button";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Download, TrendingUp } from "lucide-react";
+import { TrendingUp } from "lucide-react";
 import { MealSummary } from "@/services/meal";
 import { format } from "date-fns";
+import { ExportReportButton } from "../reports/ExportReportButton";
+import { useEffect, useState } from "react";
+import { getExpenseDistribution, getMealRateTrend, getSettlement } from "@/services/report";
 
 interface MonthlySummaryProps {
   summary: MealSummary | null;
@@ -11,22 +16,46 @@ interface MonthlySummaryProps {
 
 export function MonthlySummary({ summary, currentDate }: MonthlySummaryProps) {
   const monthName = format(currentDate, "MMMM");
-  
+  const month = currentDate.getMonth() + 1;
+  const year = currentDate.getFullYear();
+
+  const [reportData, setReportData] = useState<{
+    mealRateTrend: any[] | null;
+    expenseDistribution: any | null;
+    settlementData: any | null;
+  }>({
+    mealRateTrend: null,
+    expenseDistribution: null,
+    settlementData: null,
+  });
+
+  useEffect(() => {
+    const fetchReportData = async () => {
+      const [mealRateTrend, expenseDistribution, settlementData] = await Promise.all([
+        getMealRateTrend(6, month, year),
+        getExpenseDistribution(month, year),
+        getSettlement(month, year),
+      ]);
+      setReportData({ mealRateTrend, expenseDistribution, settlementData });
+    };
+    fetchReportData();
+  }, [month, year]);
+
   if (!summary) {
     return (
-        <Card className="w-full">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <div>
-                <CardTitle className="text-lg font-bold">
-                    {monthName} Summary
-                </CardTitle>
-                <p className="text-sm text-muted-foreground">
-                    No data available for this month
-                </p>
-                </div>
-            </CardHeader>
-        </Card>
-    )
+      <Card className="w-full">
+        <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <div>
+            <CardTitle className="text-lg font-bold">
+              {monthName} Summary
+            </CardTitle>
+            <p className="text-sm text-muted-foreground">
+              No data available for this month
+            </p>
+          </div>
+        </CardHeader>
+      </Card>
+    );
   }
 
   return (
@@ -40,10 +69,13 @@ export function MonthlySummary({ summary, currentDate }: MonthlySummaryProps) {
             Aggregated meal data in BDT currency
           </p>
         </div>
-        <Button variant="outline" size="sm" className="gap-2">
-          <Download className="h-4 w-4" />
-          Export Report
-        </Button>
+        <ExportReportButton
+          month={month}
+          year={year}
+          expenseDistribution={reportData.expenseDistribution}
+          settlementData={reportData.settlementData}
+          mealRateTrend={reportData.mealRateTrend}
+        />
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-4">
