@@ -16,6 +16,7 @@ import { format } from "date-fns";
 import { formatCurrency } from "@/lib/utils";
 import { getCurrentUser } from "@/services/auth";
 import SetupMess from "@/components/dashboard/SetupMess";
+import { CopyInviteCode } from "@/components/dashboard/CopyInviteCode";
 import { redirect } from "next/navigation";
 
 export default async function AdminDashboard() {
@@ -114,14 +115,7 @@ export default async function AdminDashboard() {
             </p>
           </div>
           <div className="h-8 w-px bg-border mx-1" />
-          <Button variant="ghost" size="sm" className="h-9 w-9 p-0" asChild>
-            <a href="#" onClick={(e) => {
-              e.preventDefault();
-              navigator.clipboard.writeText(stats?.mess?.inviteCode || "");
-            }}>
-              <Users className="h-4 w-4 text-primary" />
-            </a>
-          </Button>
+          <CopyInviteCode code={stats?.mess?.inviteCode} />
         </div>
       </div>
 
