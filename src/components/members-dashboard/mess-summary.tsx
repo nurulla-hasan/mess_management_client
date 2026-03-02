@@ -44,7 +44,7 @@ export function MessSummary({ financials }: MessSummaryProps) {
                 ))}
               </Pie>
               <Tooltip 
-                formatter={(value: number) => formatCurrency(value)}
+                formatter={(value: number | string | undefined) => formatCurrency(Number(value || 0))}
                 contentStyle={{ 
                   borderRadius: '8px', 
                   border: 'none', 
